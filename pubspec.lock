@@ -408,6 +408,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  simple_floating_bottom_nav_bar:
+    dependency: "direct main"
+    description:
+      name: simple_floating_bottom_nav_bar
+      sha256: e92222ee382cecf6c870613da1dab3bd34f45a2b022354b3312c1b4b8084017c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   sky_engine:
     dependency: transitive
     description: flutter

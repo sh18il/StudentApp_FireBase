@@ -1,19 +1,18 @@
+
 import 'package:firebase_crud/model/crud_model.dart';
 import 'package:firebase_crud/service/service_task.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class ServiceController extends ChangeNotifier {
-  final TextEditingController nameCtrl = TextEditingController();
-  final TextEditingController ageCtrl = TextEditingController();
-  final TextEditingController addressCtrl = TextEditingController();
-  final TextEditingController rollNoCtrl = TextEditingController();
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  ServiceCrud _service = ServiceCrud();
+  // final TextEditingController nameCtrl = TextEditingController();
+  // final TextEditingController ageCtrl = TextEditingController();
+  // final TextEditingController addressCtrl = TextEditingController();
+  // final TextEditingController rollNoCtrl = TextEditingController();
+  // final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final ServiceCrud _service = ServiceCrud();
   Future<ModelApp?> addData(ModelApp task) async {
     final addData = await _service.createTask(task);
-    notifyListeners();
+   
     return addData;
   }
 
@@ -23,7 +22,6 @@ class ServiceController extends ChangeNotifier {
 
   Future<void> updateData(ModelApp task) async {
     await _service.updateTask(task);
-    notifyListeners();
   }
 
   Future<void> deleteData(String id) async {
@@ -31,51 +29,39 @@ class ServiceController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addTask(BuildContext context) async {
-    if (formKey.currentState!.validate()) {
-      String id = Uuid().v1();
-      ModelApp appModel = ModelApp(
-        id: id,
-        name: nameCtrl.text,
-        age: ageCtrl.text,
-        address: addressCtrl.text,
-        rollno: rollNoCtrl.text,
-      );
+  // void addTask(BuildContext context) async {
+  //   final pro = Provider.of<ImageService>(context, listen: false);
+  //   // await pro.imageAdder(File(pro.file!.path));
+  //   if (formKey.currentState!.validate()) {
+  //     String id = Uuid().v1();
+  //     ModelApp appModel = ModelApp(
+  //       id: id,
+  //       name: nameCtrl.text,
+  //       age: ageCtrl.text,
+  //       address: addressCtrl.text,
+  //       rollno: rollNoCtrl.text,
+  //       image: pro.downloadurl,
+  //     );
 
-      try {
-        await addData(appModel);
-        notifyListeners();
+  //     try {
+  //       await addData(appModel);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Task created")),
-        );
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text("Task created")),
+  //       );
 
-        nameCtrl.clear();
-        ageCtrl.clear();
-        addressCtrl.clear();
-        rollNoCtrl.clear();
-        Navigator.pop(context);
-      } catch (e) {
-        // Handle any errors that occur during task creation
-        print("Error creating task: $e");
-      }
-    }
-  }
-   Future<ModelApp?> createTask(BuildContext context, String imageUrl) async {
-    final pro = Provider.of<ServiceController>(context, listen: false);
-    final task = ModelApp(
-      name: pro.nameCtrl.text,
-      age: pro.ageCtrl.text,
-      address: pro.addressCtrl.text,
-      rollno: pro.rollNoCtrl.text,
-      image: imageUrl, // Add imageUrl to the ModelApp
-    );
-    final createdTask = await addData(task);
-    notifyListeners();
-    return createdTask;
+  //       nameCtrl.clear();
+  //       ageCtrl.clear();
+  //       addressCtrl.clear();
+  //       rollNoCtrl.clear();
+  //       Navigator.pop(context);
+  //     } catch (e) {
+  //       // Handle any errors that occur during task creation
+  //       print("Error creating task: $e");
+  //     }
+  //   }
   }
 
-} 
 // class ServiceController extends ChangeNotifier {
 //   final ServiceCrud _serviceCrud = ServiceCrud();
 

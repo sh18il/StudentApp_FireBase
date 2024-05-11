@@ -3,6 +3,7 @@ import 'package:firebase_crud/controller/image_provider.dart';
 import 'package:firebase_crud/controller/service_controller.dart';
 import 'package:firebase_crud/service/firebase_options.dart';
 import 'package:firebase_crud/view/home_screen.dart';
+import 'package:firebase_crud/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: HomeScreen(),
+        home: SplashScreen(),
       ),
     );
   }

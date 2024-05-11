@@ -1,15 +1,13 @@
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_crud/controller/image_provider.dart';
 import 'package:firebase_crud/controller/service_controller.dart';
 import 'package:firebase_crud/view/edit_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fade_shimmer/fade_shimmer.dart';
 import 'package:firebase_crud/model/crud_model.dart';
-import 'package:firebase_crud/service/service_task.dart';
-import 'package:firebase_crud/view/add_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -21,48 +19,36 @@ class HomeScreen extends StatelessWidget {
 
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    final pro = Provider.of<ServiceController>(context, listen: false);
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromARGB(221, 72, 124, 179),
-        shape: CircleBorder(
-          side: BorderSide(
-              color: const Color.fromARGB(255, 255, 255, 255),
-              strokeAlign: BorderSide.strokeAlignOutside),
-        ),
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => AddScreen(),
-          ));
-        },
-      ),
+   
       body: Container(
         height: height,
         width: width,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/qqqq.jpg'),
+            image: AssetImage(
+                'assets/images/360_F_564999540_XdTvqLGDpneB3v4ifz0SZgzxMOFmfoVo.jpg'),
             fit: BoxFit.fill,
           ),
         ),
-        child: StreamBuilder<List<ModelApp>>(
-          stream: pro.getData(),
-          // FirebaseFirestore.instance.collection("task").snapshots(),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<ModelApp>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: Container(
+        child: Consumer<ServiceController>(builder: (context, pro, _) {
+          return StreamBuilder<List<ModelApp>>(
+            stream: pro.getData(),
+            // FirebaseFirestore.instance.collection("task").snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<ModelApp>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
                   child: ListView.separated(
                     itemBuilder: (_, i) {
                       final delay = (i * 300);
                       return Container(
                         decoration: BoxDecoration(
-                            color: Color(0xff242424),
+                            color: const Color(0xff242424),
                             borderRadius: BorderRadius.circular(8)),
-                        margin: EdgeInsets.symmetric(horizontal: 16),
-                        padding: EdgeInsets.all(16),
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.all(16),
                         child: Row(
                           children: [
                             FadeShimmer.round(
@@ -70,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                               fadeTheme: FadeTheme.dark,
                               millisecondsDelay: delay,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 8,
                             ),
                             Column(
@@ -82,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                                     radius: 4,
                                     millisecondsDelay: delay,
                                     fadeTheme: FadeTheme.light),
-                                SizedBox(
+                                const SizedBox(
                                   height: 6,
                                 ),
                                 FadeShimmer(
@@ -98,89 +84,108 @@ class HomeScreen extends StatelessWidget {
                       );
                     },
                     itemCount: 20,
-                    separatorBuilder: (_, __) => SizedBox(
+                    separatorBuilder: (_, __) => const SizedBox(
                       height: 16,
                     ),
                   ),
-                ),
-              );
-            }
-            if (snapshot.hasError) {
-              return Center(
-                child: Text("Error occurred"),
-              );
-            }
-            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  ModelApp d = snapshot.data![index];
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Slidable(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage('assets/images/night.jpg'),
-                              fit: BoxFit.fitWidth,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                            color: Color.fromARGB(255, 120, 119, 119)),
-                        child: ListTile(
-                          leading: CircleAvatar(),
-                          title: Text(
-                            d.name ?? "",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
+                );
+              }
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text("Error occurred"),
+                );
+              }
+              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    ModelApp d = snapshot.data![index];
+                    final imageUrl = d.image ?? "assets/images/image.jpeg";
+
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Slidable(
+                        endActionPane:
+                            ActionPane(motion: const ScrollMotion(), children: [
+                          SlidableAction(
+                            onPressed: (context) {
+                              if (d.id != null) {
+                                pro.deleteData(d.id!);
+                                Provider.of<ImageService>(context,
+                                        listen: false)
+                                    .deleteImage(d.image);
+                              } else {
+                                // Handle null or missing data
+                                if (kDebugMode) {
+                                  print('ModelApp object or id is null');
+                                }
+                              }
+                            },
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete,
+                            label: 'Delete',
                           ),
-                          subtitle: Text(d.age.toString(),
-                              style: TextStyle(color: Colors.white)),
+                          SlidableAction(
+                            onPressed: (context) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => EditScreen(
+                                  name: d.name.toString(),
+                                  age: d.age.toString(),
+                                  address: d.address.toString(),
+                                  rollno: d.rollno.toString(),
+                                  id: d.id.toString(),
+                                  image: d.image,
+                                ),
+                              ));
+                            },
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            icon: Icons.edit,
+                            label: 'Edit',
+                          ),
+                        ]),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              image: const DecorationImage(
+                                image: AssetImage(
+                                    'assets/images/abstract-digital-art-mi.jpg'),
+                                fit: BoxFit.fitWidth,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color.fromARGB(255, 120, 119, 119)),
+                          child: ListTile(
+                            leading: ClipRect(
+                              child: CircleAvatar(
+                                child: Image(
+                                    image: NetworkImage(imageUrl.toString())),
+                              ),
+                            ),
+                            title: Text(
+                              d.name ?? "",
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(d.age.toString(),
+                                style: const TextStyle(color: Colors.white)),
+                          ),
                         ),
                       ),
-                      endActionPane:
-                          ActionPane(motion: ScrollMotion(), children: [
-                        SlidableAction(
-                          onPressed: (context) {
-                            pro.deleteData(d.id!);
-                          },
-                          backgroundColor: Color(0xFFFE4A49),
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete,
-                          label: 'Delete',
-                        ),
-                        SlidableAction(
-                          onPressed: (context) {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => EditScreen(
-                                name: d.name.toString(),
-                                age: d.age.toString(),
-                                address: d.address.toString(),
-                                rollno: d.rollno.toString(),
-                                id: d.id.toString(),
-                              ),
-                            ));
-                          },
-                          backgroundColor: Color(0xFF21B7CA),
-                          foregroundColor: Colors.white,
-                          icon: Icons.edit,
-                          label: 'Share',
-                        ),
-                      ]),
-                    ),
-                  );
-                },
+                    );
+                  },
+                );
+              }
+              return const Center(
+                child: Text(
+                  "No data available",
+                  style: TextStyle(color: Colors.white),
+                ),
               );
-            }
-            return Center(
-              child: Text(
-                "No data available",
-                style: TextStyle(color: Colors.white),
-              ),
-            );
-          },
-        ),
+            },
+          );
+        }),
       ),
     );
   }
