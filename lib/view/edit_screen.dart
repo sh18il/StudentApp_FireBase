@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -65,7 +64,7 @@ class EditScreen extends StatelessWidget {
                   final updatedImage = imageProvider.uploadImage();
 
                   await imageProvider.imageUpdate(image!, updatedImage);
-                                },
+                },
                 child: const Text("Edit Image"),
               ),
               const Gap(30),
@@ -104,16 +103,23 @@ class EditScreen extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: const Color.fromARGB(255, 143, 143, 143),
+                  color: const Color.fromARGB(255, 127, 124, 124),
                 ),
                 child: TextFormField(
                   controller: rollNoCtrl,
                   decoration: InputDecoration(
                     labelText: "RollNo",
+                    
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your age';
+                    }
+                    return null;
+                  },
                 ),
               ),
               const Gap(15),
